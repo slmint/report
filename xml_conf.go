@@ -971,6 +971,15 @@ const (
 	//XMLBr == 换行
 	XMLBr = `<w:p/>
 `
+	// Line Break
+	// http://officeopenxml.com/WPtextSpecialContent-break.php
+	//XMLBrPage == 分页符
+	XMLBrPage = `<w:p>
+<w:r>
+<w:br w:type="page"/>
+</w:r>
+</w:p>
+`
 	//XMLEndHead ...
 	XMLEndHead = `</wx:sect>
   	</w:body>

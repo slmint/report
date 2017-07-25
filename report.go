@@ -251,6 +251,14 @@ func (doc *Report) WriteBR() error {
 	return nil
 }
 
+//WriteBR == 分页
+func (doc *Report) WriteBrPage() error {
+	if _, err := doc.Doc.WriteString(XMLBrPage); err != nil {
+		return err
+	}
+	return nil
+}
+
 //WriteTable  ==表格的格式
 func (doc *Report) WriteTable(table *Table) error {
 	XMLTable := bytes.Buffer{}

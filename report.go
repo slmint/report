@@ -320,6 +320,9 @@ func (doc *Report) WriteTable(table *Table) error {
 							data = fmt.Sprintf(XMLHeadtableTDText, color, size, size, word)
 						}
 					}
+					data = strings.Replace(data, `{{XMLCenterText}}`, "", -1)
+					data = strings.Replace(data, `{{XMLBoldText}}`, "", -1)
+					data = strings.Replace(data, `{{XMLFontFamily}}`, "", -1)
 					XMLTable.WriteString(data)
 				}
 				if !inline {
@@ -603,6 +606,9 @@ func writeTableToBuffer(table *Table) (string, error) {
 							data = fmt.Sprintf(XMLHeadtableTDText, color, size, size, word)
 						}
 					}
+					data = strings.Replace(data, `{{XMLCenterText}}`, "", -1)
+					data = strings.Replace(data, `{{XMLBoldText}}`, "", -1)
+					data = strings.Replace(data, `{{XMLFontFamily}}`, "", -1)
 					XMLTable.WriteString(data)
 				}
 				if !inline {
@@ -679,7 +685,13 @@ func writeTableToBuffer(table *Table) (string, error) {
 							if text.Isbold {
 								XMLTable.WriteString(XMLHeadtableTDTextB)
 							} else {
-								XMLTable.WriteString(XMLHeadtableTDText)
+								var (
+									data = XMLHeadtableTDText
+								)
+								data = strings.Replace(data, `{{XMLCenterText}}`, "", -1)
+								data = strings.Replace(data, `{{XMLBoldText}}`, "", -1)
+								data = strings.Replace(data, `{{XMLFontFamily}}`, "", -1)
+								XMLTable.WriteString(data)
 							}
 						}
 					}

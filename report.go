@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 //Report implement the os.File
@@ -18,11 +19,12 @@ type Report struct {
 
 //Text include text configuration
 type Text struct {
-	Words    string `json:"word"`
-	Color    string `json:"color"`
-	Size     string `json:"size"`
-	Isbold   bool   `json:"isbold"`
-	IsCenter bool   `json:"iscenter"`
+	Words      string `json:"word"`
+	Color      string `json:"color"`
+	Size       string `json:"size"`
+	FontFamily string `json:"isfontfamily"`
+	Isbold     bool   `json:"isbold"`
+	IsCenter   bool   `json:"iscenter"`
 }
 
 //Image include image configuration.
@@ -220,20 +222,24 @@ func (doc *Report) WriteText(text *Text) error {
 	color := text.Color
 	size := text.Size
 	word := text.Words
-	var Text string
+	var (
+		Text = XMLText
+	)
 	if text.IsCenter {
-		if text.Isbold {
-			Text = fmt.Sprintf(XMLCenterBoldText, color, size, size, word)
-		} else {
-			Text = fmt.Sprintf(XMLCenterText, color, size, size, word)
-		}
-	} else {
-		if text.Isbold {
-			Text = fmt.Sprintf(XMLBoldText, color, size, size, word)
-		} else {
-			Text = fmt.Sprintf(XMLText, color, size, size, word)
-		}
+		Text = strings.Replace(Text, `{{XMLCenterText}}`, XMLCenterText, 1)
 	}
+	if text.Isbold {
+		Text = strings.Replace(Text, `{{XMLBoldText}}`, XMLBoldText, 1)
+	}
+	if len(text.FontFamily) > 0 {
+		Text = strings.Replace(Text, "{{XMLFontFamily}}", strings.Replace(XMLFontFamily, `{{FontFamily}}`, text.FontFamily, -1), 1)
+	}
+	// cleanup tag
+	Text = strings.Replace(Text, `{{XMLCenterText}}`, "", -1)
+	Text = strings.Replace(Text, `{{XMLBoldText}}`, "", -1)
+	Text = strings.Replace(Text, `{{XMLFontFamily}}`, "", -1)
+
+	Text = fmt.Sprintf(Text, color, size, size, word)
 	_, err := doc.Doc.WriteString(Text)
 	if err != nil {
 		return err
@@ -392,19 +398,21 @@ func (doc *Report) WriteTable(table *Table) error {
 							XMLTable.WriteString(XMLImageLinkEnd)
 						}
 					} else if text, ko := vvv.(*Text); ko {
-						if text.IsCenter {
-							if text.Isbold {
-								XMLTable.WriteString(XMLHeadtableTDTextBC)
-							} else {
-								XMLTable.WriteString(XMLHeadtableTDTextC)
-							}
-						} else {
-							if text.Isbold {
-								XMLTable.WriteString(XMLHeadtableTDTextB)
-							} else {
-								XMLTable.WriteString(XMLHeadtableTDText)
-							}
+						var (
+							data = XMLHeadtableTDText
+						)
+						if text.Isbold {
+							data = strings.Replace(data, `{{XMLBoldText}}`, XMLBoldText, 1)
 						}
+						if len(text.FontFamily) > 0 {
+							data = strings.Replace(data, "{{XMLFontFamily}}", strings.Replace(XMLFontFamily, `{{FontFamily}}`, text.FontFamily, -1), 1)
+						}
+						// cleanup tag
+						data = strings.Replace(data, `{{XMLCenterText}}`, "", -1)
+						data = strings.Replace(data, `{{XMLBoldText}}`, "", -1)
+						data = strings.Replace(data, `{{XMLFontFamily}}`, "", -1)
+						// data = fmt.Sprintf(data, color, size, size, word)
+						XMLTable.WriteString(data)
 					}
 					//not end with table
 					used = false
@@ -887,6 +895,16 @@ func (tx *Text) SetBold(bold bool) {
 //SetCenter set center  text
 func (tx *Text) SetCenter(center bool) {
 	tx.IsCenter = center
+}
+
+//SetWords set Text
+func (tx *Text) SetWords(words string) {
+	tx.Words = wordescape(words)
+}
+
+//SetFontFamily set Text Font Family
+func (tx *Text) SetFontFamily(family string) {
+	tx.FontFamily = family
 }
 
 //NewTableTD init table td block

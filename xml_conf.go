@@ -517,8 +517,11 @@ const (
 `
 	//XMLText == 正文
 	XMLText = `<w:p>
+	{{XMLCenterText}}
     <w:r>
 		<w:rPr>
+			{{XMLFontFamily}}
+			{{XMLBoldText}}
 			<w:color w:val="%s"/>
 			<w:sz w:val="%s"/>
 			<w:sz-cs w:val="%s"/>
@@ -528,26 +531,17 @@ const (
   </w:p>
 `
 	//XMLCenterText == 居中正文
-	XMLCenterText = `<w:p>
-	<w:r>
-	<w:pPr>
-  	<w:jc w:val="center"/>
-	</w:pPr>
-	<w:rPr>
-		<w:color w:val="%s"/>
-		<w:sz w:val="%s"/>
-		<w:sz-cs w:val="%s"/>
-	</w:rPr>
-		<w:t>%s</w:t>
-	</w:r>
-</w:p>
-`
-	//XMLCenterBoldText 居中粗体
-	XMLCenterBoldText = `<w:p>
-<w:r>
+	XMLCenterText = `
 <w:pPr>
 	<w:jc w:val="center"/>
 </w:pPr>
+`
+	//XMLCenterBoldText 居中粗体
+	XMLCenterBoldText = `<w:p>
+<w:pPr>
+	<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
 <w:rPr>
 	<w:b/>
 	<w:b-cs/>
@@ -559,24 +553,20 @@ const (
 </w:r>
 </w:p>
 `
-	//XMLBoldText ==粗体
-	XMLBoldText = `<w:p>
-	<w:r>
-	<w:rPr>
-		<w:b/>
-		<w:b-cs/>
-		<w:color w:val="%s"/>
-		<w:sz w:val="%s"/>
-		<w:sz-cs w:val="%s"/>
-	</w:rPr>
-		<w:t>%s</w:t>
-	</w:r>
-</w:p>
+	//XMLBoldText == 粗体
+	XMLBoldText = `
+<w:b/>
+<w:b-cs/>
 `
 	//XMLInlineText == 不换行的正文
 	XMLInlineText = `<w:r>
 		<w:t>%s</w:t>
 	</w:r>
+`
+	//XMLFontFamily == 字体
+	XMLFontFamily = `
+	<w:rFonts w:ascii="{{FontFamily}}" w:fareast="{{FontFamily}}" w:h-ansi="{{FontFamily}}"/>
+    <wx:font wx:val="{{FontFamily}}"/>
 `
 	//XMLFontStyle defines fontStyle
 	XMLFontStyle = `<w:pPr>
@@ -770,7 +760,8 @@ const (
 		</w:pPr>
 <w:r>
 <w:rPr>
-  <w:rFonts w:hint="fareast"/>
+  {{XMLFontFamily}}
+  {{XMLBoldText}}
 	<w:color w:val="%s"/>
 	<w:sz w:val="%s"/>
 	<w:sz-cs w:val="%s"/>
